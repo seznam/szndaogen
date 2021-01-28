@@ -1,0 +1,2 @@
+recursive-include szndaogen/templates *
+include szndaogen/VERSION
