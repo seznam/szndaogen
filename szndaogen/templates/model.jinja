@@ -50,11 +50,6 @@ class {{modelName}}Model(ModelBase):
             {%- endfor %}
         }
 
-        # Class attributes -> table attributes
-        {%- for attr in tableDescription %}
-        {{ attr['Field'] }}: str = "{{ attr['Field'] }}"
-        {%- endfor %}
-
         {%- if enumTypes %}
         # Enum type attributes options
         {%- endif %}
@@ -63,9 +58,9 @@ class {{modelName}}Model(ModelBase):
         {%- endfor %}
 
     def __init__(self, init_data: typing.Dict = {}):
+        super().__init__(init_data)
         {%- for attr in tableDescription %}
         self.{{ attr['Field']}}{{ ": "+attr['ModelType'] if attr['ModelType'] else "" }} = {{ attr['ModelDefaultValue'] }}
         """{{ attr['Comment']+", " if attr['Comment'] }}Type: {{ attr['Type'] }}, Can be NULL: {{ attr['Null'] }}{{ ", Key: "+attr['Key'] if attr['Key'] }}{{ ", Default: "+attr['Default'] if attr['Default'] }}{{ ", Extra info: "+attr['Extra'] if attr['Extra'] }}"""
         {%- endfor %}
-        super().__init__(init_data)
 

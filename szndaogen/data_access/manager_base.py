@@ -145,6 +145,14 @@ class ViewManagerBase:
         Logger.log.debug("ViewManagerBase.select_all.result.list")
         return [self.MODEL_CLASS(result) for result in results]
 
+    @staticmethod
+    def models_into_dicts(result: typing.List[ModelBase]) -> typing.List[typing.Dict]:
+        """
+        Convert result of select_all into list of dicts
+        :param result: List of models
+        """
+        return [item.to_dict() for item in result]
+
     @classmethod
     def _prepare_primary_sql_condition(cls):
         args = ["{} = %s".format(primary_key) for primary_key in cls.MODEL_CLASS.Meta.PRIMARY_KEYS]
@@ -188,7 +196,6 @@ class TableManagerBase(ViewManagerBase):
 
         Logger.log.info("TableManagerBase.update_one.result", result=result, manager=self.__class__.__name__)
 
-        model_instance.update_model_data()
         return result
 
     def insert_one(
@@ -245,7 +252,6 @@ class TableManagerBase(ViewManagerBase):
 
         Logger.log.info("TableManagerBase.insert_one.result", result=result, manager=self.__class__.__name__)
 
-        model_instance.update_model_data()
         return result
 
     def insert_one_bulk(
