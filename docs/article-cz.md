@@ -12,7 +12,7 @@ a po delší době práce nenáviděnou, knihovnu `SQLAlchemy`. `SQLAlchemy` je 
 standartním způsobem, problémy začínají, když potřebujete dělat složitější agregační funkce případně sofistikovaněji pracovat s projekcí
 jednotlivých sloupců. Tomu všemu jsme se chtěli vyhnout. Navíc pro práci s datovou vrstvou pomocí SQL Alchemy je potřeba definovat modely
 pro jednotlivé tabulky a její atributy (sloupečky), každou změnu, kterou uděláte na DB musíte hned promítnout i do definice modelu. Ale tohle všechno určite
-znáte a není potřeba se o tom dalekosáhle rozepisovat. Popíšu co napadlo nás a jakým směrem jsme se vydali.
+znáte a není potřeba se o tom dalekosáhle rozepisovat. Popíšu, co napadlo nás a jakým směrem jsme se vydali.
 
 Napsali jsme si jednoduchý analyzátor existujících definic tabulek a views na MySQL databázi. Po analýze databázové struktury se vygenerují
 `Modely` obsahující definici jednotlivých atributů tabulek a views. Ke každému modelu se zároveň vygeneruje příslušný `DataManager` sloužící pro
@@ -55,9 +55,9 @@ import typing
 from szndaogen.data_access.model_base import ModelBase
 
 
-class ViewOrdesToBeProcessedModel(ModelBase):
+class ViewOrdersToBeProcessedModel(ModelBase):
     class Meta:
-        TABLE_NAME: str = "view_ordes_to_be_processed"
+        TABLE_NAME: str = "view_orders_to_be_processed"
         TABLE_TYPE: str = "VIEW"
         # fmt: off
         SQL_STATEMENT: str = """SELECT """ \
@@ -442,7 +442,7 @@ převést na `view`
 ```sql
 DELIMITER $$
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_ordes_to_be_processed` AS (
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_orders_to_be_processed` AS (
 SELECT
   `o`.`orderNumber`      AS `orderNumber`,
   `od`.`productCode`     AS `productCode`,
@@ -486,19 +486,19 @@ Writing manager `Productlines` into `example_dao/managers/base/productlines_mana
 Writing model `Products` into `example_dao/models/products_model.py`
 Skipping manager `Products` exists `example_dao/managers/products_manager.py`
 Writing manager `Products` into `example_dao/managers/base/products_manager_base.py`
-Writing model `ViewOrdesToBeProcessed` into `example_dao/models/viewordestobeprocessed_model.py`
-Writing manager `ViewOrdesToBeProcessed` into `example_dao/managers/viewordestobeprocessed_manager.py`
-Writing manager `ViewOrdesToBeProcessed` into `example_dao/managers/base/viewordestobeprocessed_manager_base.py`
+Writing model `ViewOrdersToBeProcessed` into `example_dao/models/vieworderstobeprocessed_model.py`
+Writing manager `ViewOrdersToBeProcessed` into `example_dao/managers/vieworderstobeprocessed_manager.py`
+Writing manager `ViewOrdersToBeProcessed` into `example_dao/managers/base/vieworderstobeprocessed_manager_base.py`
 ```
 
-Za pár sekund máme hotový výsledek a už můžeme přístupovat k datům vystaveným přes `ViewOrdesToBeProcessedManager` a provádět nad nimi
+Za pár sekund máme hotový výsledek a už můžeme přístupovat k datům vystaveným přes `ViewOrdersToBeProcessedManager` a provádět nad nimi
 operace filtrování pomocí `condition=`  a `condition_params=` podmínky, řazení pomocí `order_by=` případně limitovat počet záznamů pomocí `limit=`
 parametru metody `select_all`.
 
 ```python
-from example_dao.managers.view_ordes_to_be_processed_manager import ViewOrdesToBeProcessedManager
+from example_dao.managers.view_orders_to_be_processed_manager import ViewOrdersToBeProcessedManager
 
-manager = ViewOrdesToBeProcessedManager()
+manager = ViewOrdersToBeProcessedManager()
 results = manager.select_all(order_by=("`od`.`quantityOrdered` DESC",), limit=10)
 
 print("Top 10 ordered quauntities waiting for processing")
@@ -557,6 +557,9 @@ result = [
 Každou položku pole lze pak prohnat funkcí `auto_group_dict` z modulu `szndaogen.tools.auto_group`. Funkce počítá s tím, že položky, které se mají seskupit pod jeden klíč, jsou pojmenovány ve formátu `seskupujícíKlíč___názevPoložky` (odděleno 3mi podtržítky).
 Výsledek by pak vypadal takto:
 ```python
+from pprint import pprint
+from szndaogen.tools.auto_group import auto_group_dict
+
 new_result = [auto_group_dict(item) for item in result]
 pprint(new_result)
 
@@ -608,6 +611,9 @@ WHERE o.`officeCode` = 1;
 ```
 A zkusíme výsledek prohnat funkcí `auto_group_list`, která počítá s tím, že položky, které se mají seskupit do jednoho pole pod zvolený klíč, jsou pojmenovány ve formátu `seskupujícíKlíč__názevPoložky` (odděleno 2mi podtržítky).
 ```python
+from pprint import pprint
+from szndaogen.tools.auto_group import auto_group_list
+
 new_result = auto_group_list(result)
 pprint(new_result)
 
@@ -640,6 +646,9 @@ LEFT JOIN `employees` AS e ON o.`officeCode`=e.`officeCode`
 Výsledek rovnou proženeme funkcí `auto_group_list_by_pkeys` a jako slučovací klíč definujeme tuple `("officeCode",)`
 
 ```python
+from pprint import pprint
+from szndaogen.tools.auto_group import auto_group_list_by_pkeys
+
 new_result = auto_group_list_by_pkeys(("officeCode",) result)
 pprint(new_result)
 
@@ -678,5 +687,6 @@ výhody:
 
 nevýhody:
 - před ostatními kolegy programátory se může stát, že se budete stydět za to, že pracujete s nečím tak jednoduchým a dělá to práci za Vás
+- jednu opravdovou nevýhodu tohle řešení v sobě opravdu skrývá a to, že při spolupráci více lidí na jednom projektu je lepší mít pro každého člena separátní DB, aby se spouštěním generátoru nad společnou databází ostatním kolegům nedosávaly do pracovní větve změny jiných kolegů. My jsme to např. řešili tak, že generátor a commit změn v modelech jsme prováděli až v DEV větvi.
 
 Snad i v nějkterém z Vašich projektů najde tato knihovna využití a budete ji používat se stejnou radostí jako my.
