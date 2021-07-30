@@ -191,7 +191,7 @@ class EmployeesModel(ModelBase):
         MODEL_DATA_CONVERTOR: typing.Dict = {
         }
 
-        # Class attributes -> table attributes
+        # Class attribute to table attribute name conversion
         employeeNumber: str = "employeeNumber"
         lastName: str = "lastName"
         firstName: str = "firstName"

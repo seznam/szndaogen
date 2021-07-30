@@ -26,9 +26,9 @@ class ModelBase:
         return str(self.model_data)
 
     def __setattr__(self, key, value):
-        if key in self.Meta.ATTRIBUTE_LIST:
+        if key in self.Meta.ATTRIBUTE_LIST and hasattr(self, "model_data"):
             self.model_data[key] = value
-        super().__setattr__(key, value)
+        return super().__setattr__(key, value)
 
     def to_dict(self) -> typing.Dict:
         """

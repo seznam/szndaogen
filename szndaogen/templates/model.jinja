@@ -50,6 +50,11 @@ class {{modelName}}Model(ModelBase):
             {%- endfor %}
         }
 
+        # Class attribute to table attribute name conversion
+        {%- for attr in tableDescription %}
+        {{ attr['Field'] }}: str = "{{ attr['Field'] }}"
+        {%- endfor %}
+
         {%- if enumTypes %}
         # Enum type attributes options
         {%- endif %}

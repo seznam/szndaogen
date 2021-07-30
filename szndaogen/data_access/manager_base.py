@@ -139,7 +139,7 @@ class ViewManagerBase:
         Logger.log.info("ViewManagerBase.select_all.result", result=results, manager=self.__class__.__name__)
 
         if Config.MANAGER_AUTO_MAP_MODEL_ATTRIBUTES:
-            Logger.log.debug("ViewManagerBase.select_all.result.list")
+            Logger.log.debug("ViewManagerBase.select_all.result.list.automapped")
             return [self.MODEL_CLASS(result).map_model_attributes() for result in results]
 
         Logger.log.debug("ViewManagerBase.select_all.result.list")
