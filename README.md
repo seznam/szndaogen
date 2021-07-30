@@ -191,7 +191,7 @@ class EmployeesModel(ModelBase):
         MODEL_DATA_CONVERTOR: typing.Dict = {
         }
 
-        # Class attributes -> table attributes
+        # Class attribute to table attribute name conversion
         employeeNumber: str = "employeeNumber"
         lastName: str = "lastName"
         firstName: str = "firstName"
@@ -340,11 +340,11 @@ LEFT JOIN orderdetails AS od ON od.`orderNumber`=o.`orderNumber`
 LEFT JOIN products AS p ON p.`productName`
 WHERE o.`status`="In Process"
 ```
-create view `view_ordes_to_be_processed` from it:
+create view `view_orders_to_be_processed` from it:
 ```sql
 DELIMITER $$
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_ordes_to_be_processed` AS (
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `view_orders_to_be_processed` AS (
 SELECT
   `o`.`orderNumber`      AS `orderNumber`,
   `od`.`productCode`     AS `productCode`,
@@ -389,15 +389,15 @@ Writing manager `Productlines` into `example_dao/managers/base/productlines_mana
 Writing model `Products` into `example_dao/models/products_model.py`
 Skipping manager `Products` exists `example_dao/managers/products_manager.py`
 Writing manager `Products` into `example_dao/managers/base/products_manager_base.py`
-Writing model `ViewOrdesToBeProcessed` into `example_dao/models/viewordestobeprocessed_model.py`
-Writing manager `ViewOrdesToBeProcessed` into `example_dao/managers/viewordestobeprocessed_manager.py`
-Writing manager `ViewOrdesToBeProcessed` into `example_dao/managers/base/viewordestobeprocessed_manager_base.py`
+Writing model `ViewOrdersToBeProcessed` into `example_dao/models/vieworderstobeprocessed_model.py`
+Writing manager `ViewOrdersToBeProcessed` into `example_dao/managers/vieworderstobeprocessed_manager.py`
+Writing manager `ViewOrdersToBeProcessed` into `example_dao/managers/base/vieworderstobeprocessed_manager_base.py`
 ```
-and all work is done in a second. Now you can use `ViewOrdesToBeProcessedManager` with custom `WHERE` conditions, `ORDER BY` sorts, limits, etc.
+and all work is done in a second. Now you can use `ViewOrdersToBeProcessedManager` with custom `WHERE` conditions, `ORDER BY` sorts, limits, etc.
 ```python
-from example_dao.managers.view_ordes_to_be_processed_manager import ViewOrdesToBeProcessedManager
+from example_dao.managers.view_orders_to_be_processed_manager import ViewOrdersToBeProcessedManager
 
-manager = ViewOrdesToBeProcessedManager()
+manager = ViewOrdersToBeProcessedManager()
 results = manager.select_all(order_by=("`od`.`quantityOrdered` DESC",), limit=10)
 
 print("Top 10 ordered quauntities waiting for processing")

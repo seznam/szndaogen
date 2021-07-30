@@ -22,6 +22,20 @@ class ModelBase:
     def __init__(self, init_data: typing.Dict = {}):
         self.model_data: typing.Dict = self._convert_datatypes(init_data)
 
+    def __str__(self):
+        return str(self.model_data)
+
+    def __setattr__(self, key, value):
+        if key in self.Meta.ATTRIBUTE_LIST and hasattr(self, "model_data"):
+            self.model_data[key] = value
+        return super().__setattr__(key, value)
+
+    def to_dict(self) -> typing.Dict:
+        """
+        Returns internal model data as dict
+        """
+        return self.model_data
+
     def map_model_attributes(self, data: typing.Dict = None) -> "ModelBase":
         """
         Set or update model attributes by internal model data or external data from method param if attribute exists.
@@ -33,13 +47,6 @@ class ModelBase:
             if key in self.Meta.ATTRIBUTE_LIST:
                 self.__setattr__(key, value)
         return self
-
-    def update_model_data(self):
-        """
-        Set or update internal model data by model attribute values.
-        """
-        for key in self.Meta.ATTRIBUTE_LIST:
-            self.model_data[key] = self.__getattribute__(key)
 
     def clone(self):
         model_clone = self.__class__()

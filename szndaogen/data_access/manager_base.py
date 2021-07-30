@@ -139,11 +139,19 @@ class ViewManagerBase:
         Logger.log.info("ViewManagerBase.select_all.result", result=results, manager=self.__class__.__name__)
 
         if Config.MANAGER_AUTO_MAP_MODEL_ATTRIBUTES:
-            Logger.log.debug("ViewManagerBase.select_all.result.list")
+            Logger.log.debug("ViewManagerBase.select_all.result.list.automapped")
             return [self.MODEL_CLASS(result).map_model_attributes() for result in results]
 
         Logger.log.debug("ViewManagerBase.select_all.result.list")
         return [self.MODEL_CLASS(result) for result in results]
+
+    @staticmethod
+    def models_into_dicts(result: typing.List[ModelBase]) -> typing.List[typing.Dict]:
+        """
+        Convert result of select_all into list of dicts
+        :param result: List of models
+        """
+        return [item.to_dict() for item in result]
 
     @classmethod
     def _prepare_primary_sql_condition(cls):
@@ -188,7 +196,6 @@ class TableManagerBase(ViewManagerBase):
 
         Logger.log.info("TableManagerBase.update_one.result", result=result, manager=self.__class__.__name__)
 
-        model_instance.update_model_data()
         return result
 
     def insert_one(
@@ -245,7 +252,6 @@ class TableManagerBase(ViewManagerBase):
 
         Logger.log.info("TableManagerBase.insert_one.result", result=result, manager=self.__class__.__name__)
 
-        model_instance.update_model_data()
         return result
 
     def insert_one_bulk(
