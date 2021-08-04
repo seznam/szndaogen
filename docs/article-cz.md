@@ -1,3 +1,5 @@
+Tento text je určený pro server Zdroják.cz (https://zdrojak.cz)
+
 # Generátor DAO vrstvy pro Python
 
 Jednoduchý objektový přístup do databáze při vytváření backendových či jiných komponent potřeboval už snad každý z nás. Určitě jste se
@@ -115,7 +117,6 @@ class ViewOrdersToBeProcessedModel(ModelBase):
         productInStockStatus: str = "productInStockStatus"
 
     def __init__(self, init_data: typing.Dict = {}):
-        super().__init__(init_data)
         self.orderNumber: int = None
         """Type: int(11), Can be NULL: NO"""
         self.productCode: str = None
@@ -128,14 +129,14 @@ class ViewOrdersToBeProcessedModel(ModelBase):
         """Type: smallint(6), Can be NULL: YES"""
         self.productInStockStatus: str = None
         """Type: varchar(15), Can be NULL: NO"""
-
+        super().__init__(init_data)
 ```
 
 To by možná na úvod už stačilo. Nyní múžeme přejít k praktickým ukázkám využití knihovny `SZN DAOGen`
 
 # Použití v praxi
 
-Instalace knihovny je velmi jednoduchá, je instalovatelná ze standartního PYPI repozitáře:
+Instalace knihovny je velmi jednoduchá, je instalovatelná ze standartního [PYPI](https://pypi.org/project/szndaogen/) repozitáře:
 ```bash
 pip3 install szndaogen
 ```
