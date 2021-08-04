@@ -176,12 +176,8 @@ class TableManagerBase(ViewManagerBase):
         set_prepare = []
         set_prepare_params = []
         for attribute_name in self.MODEL_CLASS.Meta.ATTRIBUTE_LIST:
-            if model_instance.model_data.get(attribute_name) != model_instance.__getattribute__(attribute_name):
-                set_prepare.append("`{}` = %s".format(attribute_name))
-                set_prepare_params.append(model_instance.__getattribute__(attribute_name))
-
-        if len(set_prepare) == 0:  # no update needed
-            return 0
+            set_prepare.append("`{}` = %s".format(attribute_name))
+            set_prepare_params.append(model_instance.__getattribute__(attribute_name))
 
         condition_prepare = self._prepare_primary_sql_condition()
         condition_prepare_params = self._prepare_primary_sql_condition_params(model_instance)

@@ -1,5 +1,8 @@
 # SZN DAO Generator changelog
 
+## 2.4.2 / 2021-08-04
+Update functionality fix.
+
 ## 2.4.1 / 2021-08-04
 Model template fix.
 
