@@ -1,5 +1,8 @@
 # SZN DAO Generator changelog
 
+## 2.4.3 / 2021-08-21
+Safe dataconversion withouth exception fail.
+
 ## 2.4.2 / 2021-08-04
 Update functionality fix.
 

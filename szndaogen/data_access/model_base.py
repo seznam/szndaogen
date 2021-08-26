@@ -59,10 +59,13 @@ class ModelBase:
     def _convert_datatypes(cls, item: dict) -> dict:
         for key, value in item.items():
             datatype = str(type(value))
-            # known problematic data type needed conversion for easy jSON transform
+            # some known problematic data types need to be converted for easy jSON transform
             if datatype in cls.DATATYPES_CONVERTOR:
                 item[key] = cls.DATATYPES_CONVERTOR[datatype](value)
             # data convertion for DB type
             if key in cls.Meta.MODEL_DATA_CONVERTOR:
-                item[key] = cls.Meta.MODEL_DATA_CONVERTOR[key](value)
+                try:
+                    item[key] = cls.Meta.MODEL_DATA_CONVERTOR[key](value)
+                except Exception as _:
+                    item[key] = value  # Conversion failed, pass value unchanged
         return item
