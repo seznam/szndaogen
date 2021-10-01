@@ -9,7 +9,7 @@ def update_employee_first_name(employee_id: int, new_first_name: str, dbi: DBI =
     manager = EmployeesManager(dbi=dbi)  # tell manager to work with passed DBI instance to keep transaction connection
     model_instance = manager.select_one(employee_id)
     model_instance.firstName = new_first_name
-    return manager.update_one(model_instance)
+    return manager.update_one(model_instance, exclude_columns=["lastName"])
 
 
 if __name__ == '__main__':
@@ -51,7 +51,8 @@ if __name__ == '__main__':
     new_employee.email = "a@b.c"
     new_employee.officeCode = 4
     new_employee.jobTitle = "Incognito"
-    employee_manager.insert_one(new_employee)
+    new_employee.reportsTo = None
+    employee_manager.insert_one(new_employee, exclude_none_values=True)
 
     # delete item
     employee_manager.delete_one(new_employee)

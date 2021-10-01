@@ -164,20 +164,26 @@ class ViewManagerBase:
 
 
 class TableManagerBase(ViewManagerBase):
-    def update_one(self, model_instance: ModelBase) -> int:
+    def update_one(self, model_instance: ModelBase, exclude_none_values: bool = False, exclude_columns: list = None) -> int:
         """
         Update one database record based on model attributes
         :param model_instance: Model instance
+        :param exclude_none_values: You can exclude columns with None value from update statement
+        :param exclude_columns: You can exclude columns names from update statement
         :return: Number of affected rows
         """
+        exclude_columns = exclude_columns or []
         if not self.MODEL_CLASS.Meta.PRIMARY_KEYS:
             raise ManagerException("Can't update record based on model instance. There are no primary keys specified.")
 
         set_prepare = []
         set_prepare_params = []
         for attribute_name in self.MODEL_CLASS.Meta.ATTRIBUTE_LIST:
+            value = model_instance.__getattribute__(attribute_name)
+            if (exclude_none_values and value is None) or attribute_name in exclude_columns:
+                continue
             set_prepare.append("`{}` = %s".format(attribute_name))
-            set_prepare_params.append(model_instance.__getattribute__(attribute_name))
+            set_prepare_params.append(value)
 
         condition_prepare = self._prepare_primary_sql_condition()
         condition_prepare_params = self._prepare_primary_sql_condition_params(model_instance)
@@ -197,24 +203,32 @@ class TableManagerBase(ViewManagerBase):
     def insert_one(
         self,
         model_instance: ModelBase,
+        exclude_none_values: bool = False,
+        exclude_columns: list = None,
         use_on_duplicate_update_statement: bool = False,
         use_insert_ignore_statement: bool = False,
     ) -> int:
         """
         Insert one record into database based on model attributes
         :param model_instance: Model instance
+        :param exclude_none_values: You can exclude columns with None value from insert statement
+        :param exclude_columns: You can exclude columns names from insert statement
         :param use_on_duplicate_update_statement: Use ON DUPLICATE KEY UPDATE statement
         :param use_insert_ignore_statement: Use INSERT IGNORE statement
         :return: Last inserted id if it is possible
         """
+        exclude_columns = exclude_columns or []
         insert_prepare = []
         insert_prepare_values = []
         insert_prepare_params = []
         update_prepare = []
         for attribute_name in self.MODEL_CLASS.Meta.ATTRIBUTE_LIST:
+            value = model_instance.__getattribute__(attribute_name)
+            if (exclude_none_values and value is None) or attribute_name in exclude_columns:
+                continue
             insert_prepare.append("`{}`".format(attribute_name))
             insert_prepare_values.append("%s")
-            insert_prepare_params.append(model_instance.__getattribute__(attribute_name))
+            insert_prepare_params.append(value)
             if use_on_duplicate_update_statement:
                 update_prepare.append("`{0}` = VALUES(`{0}`)".format(attribute_name))
 
@@ -253,6 +267,8 @@ class TableManagerBase(ViewManagerBase):
     def insert_one_bulk(
         self,
         model_instance: ModelBase,
+        exclude_none_values: bool = False,
+        exclude_columns: list = None,
         use_on_duplicate_update_statement: bool = False,
         use_insert_ignore_statement: bool = False,
         auto_flush: bool = True,
@@ -260,19 +276,25 @@ class TableManagerBase(ViewManagerBase):
         """
         Insert more records in one bulk.
         :param model_instance: Model instance
+        :param exclude_none_values: You can exclude columns with None value from insert statement
+        :param exclude_columns: You can exclude columns names from insert statement
         :param use_on_duplicate_update_statement: Use ON DUPLICATE KEY UPDATE statement
         :param use_insert_ignore_statement: Use INSERT IGNORE statement
         :param auto_flush: Auto flush bulks from buffer after N records (defined in self.bulk_insert_buffer_size)
         :return: Number of items in buffer
         """
+        exclude_columns = exclude_columns or []
         insert_prepare = []
         insert_prepare_values = []
         insert_prepare_params = []
         update_prepare = []
         for attribute_name in self.MODEL_CLASS.Meta.ATTRIBUTE_LIST:
+            value = model_instance.__getattribute__(attribute_name)
+            if (exclude_none_values and value is None) or attribute_name in exclude_columns:
+                continue
             insert_prepare.append("`{}`".format(attribute_name))
             insert_prepare_values.append("%s")
-            insert_prepare_params.append(model_instance.__getattribute__(attribute_name))
+            insert_prepare_params.append(value)
             if use_on_duplicate_update_statement:
                 update_prepare.append("`{0}` = VALUES(`{0}`)".format(attribute_name))
 
