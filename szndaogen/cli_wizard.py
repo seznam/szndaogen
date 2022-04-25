@@ -1,6 +1,7 @@
 import os
 import stat
 import sys
+import getpass
 
 DEFAULT_MYSQL_PORT = 3306
 
@@ -44,7 +45,7 @@ def wizard(options) -> tuple:
     if not user:
         _exit("No MySQL username provided. Exiting.")
 
-    pw = input("MySQL password: ")
+    pw = getpass.getpass("MySQL password: ")
 
     output_path = input("Output path where all models and managers will be generated (default \"./data_access\"): ")
     if not output_path:
