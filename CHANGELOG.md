@@ -1,5 +1,11 @@
 # SZN DAO Generator changelog
 
+## 2.4.5 / 2022-04-26
+Added `getpass` to `cli_wizard.py`
+
+## 2.4.4 / 2021-10-01
+Adding possibility to exclude columns or None values from insert or update statements.
+
 ## 2.4.3 / 2021-08-21
 Safe dataconversion withouth exception fail.
 
